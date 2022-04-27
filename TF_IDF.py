@@ -7,7 +7,8 @@ import pickle
 import threading
 
 class TF_IDF_Vectorizer:
-	def __init__(self, input_dir="./data/text/", output_dir="./output/", vocab=None, stemmer=None, use_cached=True):
+	def __init__(self, input_dir="./data/text/", output_dir="./output/", vocab=None, stemmer=None, use_cached=True, print_output=True):
+		self.print_output = print_output
 		self.use_cached = use_cached
 		self.input_dir = input_dir
 		self.output_dir = output_dir
@@ -41,7 +42,8 @@ class TF_IDF_Vectorizer:
 			with open(self.output_dir+"vocab.dat", "w") as f:
 				f.write("\n".join(vocab))
 		else:
-			print("Using cached... Vocab")
+			if self.print_output:
+				print("Using cached... Vocab")
 			with open(self.output_dir+"vocab.dat", "r") as f:
 				vocab = [i.replace("\n", "") for i in f.readlines()]
 		return vocab
@@ -79,7 +81,8 @@ class TF_IDF_Vectorizer:
 			with open(self.output_dir+"tf.dat", "wb") as f:
 				pickle.dump(documents, f)
 		else:
-			print("Using cached... TF")
+			if self.print_output:
+				print("Using cached... TF")
 			with open(self.output_dir+"tf.dat", "rb") as f:
 				documents = pickle.load(f)
 		return documents
@@ -105,7 +108,8 @@ class TF_IDF_Vectorizer:
 			with open(self.output_dir+"idf.dat", "wb") as f:
 				pickle.dump(idf, f)
 		else:
-			print("Using cached... IDF")
+			if self.print_output:
+				print("Using cached... IDF")
 			with open(self.output_dir+"idf.dat", "rb") as f:
 				idf = pickle.load(f)
 		return idf
@@ -129,7 +133,7 @@ class TF_IDF_Vectorizer:
 			similarity.append(cosine)
 		self.similarities.append({"worker"+name: similarity})
 
-	def get_similarity_score(self, document, top_k=5, num_workers=4):
+	def get_similarity_score(self, document, top_k=5, num_workers=4, return_worker_split=False):
 		data = document
 		data = data.lower()
 		data = re.sub("[^a-zA-Z]+", " ", data)
@@ -177,7 +181,10 @@ class TF_IDF_Vectorizer:
 		ranking_indices = np.argsort(similarities)[::-1]
 		ranking = np.array(self.tf["files"])
 		ranking = ranking[ranking_indices]
-		return similarities[:top_k], ranking[:top_k]
+		if not return_worker_split:
+			return similarities[:top_k], ranking[:top_k]
+		else:
+			return similarities[:top_k], ranking[:top_k], worker_splits
 
 if __name__ == '__main__':
 	tf_idf = TF_IDF_Vectorizer(use_cached=True)
