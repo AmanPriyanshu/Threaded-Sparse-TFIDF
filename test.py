@@ -1,4 +1,4 @@
-from TF_IDF import TF_IDF_Vectorizer
+from Threaded_Sparse_TFIDF.Threaded_Sparse_TFIDF import TF_IDF_Vectorizer
 import time
 import sys
 import pandas as pd
