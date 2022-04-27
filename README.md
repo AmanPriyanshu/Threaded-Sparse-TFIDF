@@ -12,7 +12,7 @@ _, ranking = tf_idf.get_similarity_score("science fiction super hero movie", num
 ## Performance:
 ### Image:
 
-![image](performance.png)
+![image](https://github.com/AmanPriyanshu/Threaded-Sparse-TFIDF/blob/main/performance.png)
 
 ### Table:
 |num_workers|time              |partition_size     |
